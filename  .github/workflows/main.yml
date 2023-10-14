@@ -1,0 +1,38 @@
+name: CI
+
+on:
+  push: ['master', 'dev', 'releases']
+  pull_request: ['master']
+
+jobs:
+  build:
+    strategy:
+      matrix:
+        os: [windows-2019]
+        node-version: [16.x, 18.x, 20.x, latest]
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - name: Get npm cache directory
+        id: npm-cache
+        run: |
+          echo "::set-output name=dir::$(npm config get cache)"
+      - uses: actions/cache@v3
+        with:
+          path: ${{ steps.npm-cache.outputs.dir }}
+          key: ${{ matrix.os }}-node-${{ matrix.node-version }}-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ matrix.os }}-node-${{ matrix.node-version }}
+            ${{ matrix.os }}-node-
+            ${{ matrix.os }}-
+
+      - run: npm install
+      - run: npm ci
