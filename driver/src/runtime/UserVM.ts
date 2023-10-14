@@ -1,17 +1,13 @@
 import IsolatedVM from "isolated-vm";
 import * as v8 from "v8";
 import fs from "fs";
-import { Config, Metric, NodeJS, StaticTerrainData, VM } from "@/runtime/types";
+import { Metric, NodeJS, StaticTerrainData, VM } from "@/runtime/types";
 import RuntimeGlobal = NodeJS.RuntimeGlobal;
+import { common } from "@neo-screeps/common";
 
 export class UserVM {
   public vms: { [userId: string]: VM } = {};
-  public config: Config = {
-    engine: {
-      reportMemoryUsageInterval: 0,
-      enableInspector: false,
-    },
-  };
+  public config = common.configManager.config;
   public snapshot?: NonNullable<unknown>;
   public async create(
     userId: string,
