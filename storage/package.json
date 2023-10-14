@@ -1,0 +1,35 @@
+{
+  "name": "@neo-screeps/storage",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/storage.cjs",
+  "module": "./dist/storage.js",
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "import": "./dist/storage.js",
+    "require": "./dist/storage.cjs"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc && vite build",
+    "lint": "eslint . --ext ts,tsx",
+    "test": "jest",
+    "coverage": "jest --coverage"
+  },
+  "_moduleAliases": {
+    "@": "src"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "lokijs": "^1.5.12",
+    "q": "^1.5.1"
+  },
+  "devDependencies": {
+    "@types/lokijs": "^1.5.10",
+    "@types/q": "^1.5.6"
+  }
+}

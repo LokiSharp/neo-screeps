@@ -10,9 +10,9 @@ export class ConfigManager {
 class Config {
   public common = {
     constants: constants,
-    storage: storage,
     dbCollections: dbCollections,
     system: {},
   };
   public engine = engine;
+  public storage = storage;
 }
