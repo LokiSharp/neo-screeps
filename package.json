@@ -1,0 +1,29 @@
+{
+  "name": "neo-screeps",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/LokiSharp/neo-screeps.git"
+  },
+  "author": "LokiSharp",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/LokiSharp/neo-screeps/issues"
+  },
+  "homepage": "https://github.com/LokiSharp/neo-screeps#readme",
+  "workspaces": [
+    "common",
+    "storage",
+    "backend-local",
+    "engine",
+    "driver"
+  ],
+  "devDependencies": {
+    "vite": "^4.4.11"
+  }
+}
