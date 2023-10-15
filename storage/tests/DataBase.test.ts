@@ -29,7 +29,7 @@ afterAll(() => {
 
 describe("Database", () => {
   test("DataBase", () => {
-    expect(db.db).not.toBeNull();
+    expect(db.db).not.toBeUndefined();
   });
 
   test("DataBase updateDocument $set", () => {
@@ -122,7 +122,7 @@ describe("Database", () => {
 
   test("DataBase getOrAddCollection", () => {
     const collection = db.getOrAddCollection("users");
-    expect(collection).not.toBeNull();
+    expect(collection).not.toBeUndefined();
   });
 
   test("DataBase recursReplaceNeNull", () => {
@@ -145,16 +145,16 @@ describe("Database", () => {
 
   test("DataBase dbRequest", () => {
     db.dbRequest("users", "insert", [{ name: "Loki", age: 10 }], (_, result) =>
-      expect(result).not.toBeNull(),
+      expect(result).not.toBeUndefined(),
     );
     db.dbRequest("users", "find", [{ age: { $eq: 1 } }], (_, result) =>
-      expect(result).not.toBeNull(),
+      expect(result).not.toBeUndefined(),
     );
   });
 
   test("DataBase dbUpdate", () => {
     db.dbRequest("users", "insert", [{ name: "Loki", age: 1 }], (_, result) =>
-      expect(result).not.toBeNull(),
+      expect(result).not.toBeUndefined(),
     );
     db.dbUpdate(
       "users",
@@ -162,11 +162,65 @@ describe("Database", () => {
       { $set: { name: "Thor", age: 35 } },
       { upsert: true },
       (_, result) => {
-        expect(result).not.toBeNull();
+        expect(result).not.toBeUndefined();
       },
     );
     db.dbRequest("users", "find", [{ age: { $gt: 0 } }], (_, result) => {
-      expect(result).not.toBeNull();
+      expect((result as Array<unknown>).length).toBe(1);
+    });
+  });
+
+  test("DataBase dbBulk", () => {
+    db.dbBulk(
+      "users",
+      [
+        { op: "insert", data: { name: "Loki", age: 10 } },
+        { op: "insert", data: { name: "Thor", age: 20 } },
+      ],
+      (_, result) => {
+        expect(result).not.toBeUndefined();
+      },
+    );
+    const usersId: string[] = [];
+    db.dbRequest("users", "find", [{ age: { $gt: 0 } }], (_, result) => {
+      (result as { _id: string }[]).forEach((user) => usersId.push(user._id));
+      expect((result as Array<unknown>).length).toBe(2);
+    });
+    db.dbBulk(
+      "users",
+      [
+        {
+          op: "update",
+          id: usersId[0],
+          update: { $set: { age: 100 } },
+        },
+        {
+          op: "update",
+          id: usersId[1],
+          update: { $set: { age: 0 } },
+        },
+      ],
+      (_, result) => {
+        expect(result).not.toBeUndefined();
+      },
+    );
+
+    db.dbRequest("users", "find", [{ age: { $gt: 50 } }], (_, result) => {
+      expect((result as Array<unknown>).length).toBe(1);
+    });
+    db.dbBulk(
+      "users",
+      [
+        { op: "remove", id: usersId[0] },
+        { op: "remove", id: usersId[1] },
+      ],
+      (_, result) => {
+        expect(result).not.toBeUndefined();
+      },
+    );
+
+    db.dbRequest("users", "find", [{ age: { $gt: 0 } }], (_, result) => {
+      expect((result as Array<unknown>).length).toBe(0);
     });
   });
 });

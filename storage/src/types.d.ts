@@ -13,4 +13,12 @@ type Data = {
   [propName: string]: DataType;
 };
 
+type CallBack = (message: string | null, obj?: object) => void;
+
 type DataType = object | number | string | null | Data;
+
+type Method = "insert" | "find" | "findOne" | "count" | "removeWhere";
+
+type BulkData = { op: BulkOp; id?: string; update?: Data; data?: Data };
+
+type BulkOp = "update" | "insert" | "remove";

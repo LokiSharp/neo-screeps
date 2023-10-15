@@ -162,9 +162,9 @@ export class DataBase {
   }
   public dbRequest(
     collectionName: string,
-    method: string,
+    method: Method,
     argsArray: (object | object[])[],
-    cb: (message: string | null, obj?: object) => void,
+    cb: CallBack,
   ): void {
     try {
       const collection = this.getOrAddCollection(collectionName);
@@ -203,7 +203,7 @@ export class DataBase {
     query: Data,
     update: Data,
     params: { upsert?: boolean } | null,
-    cb: (message: string | null, obj?: object) => void,
+    cb: CallBack,
   ): void {
     try {
       this.recursReplaceNeNull(query);
@@ -241,6 +241,41 @@ export class DataBase {
       } else {
         cb(null, {});
       }
+    } catch (e) {
+      cb((e as Error).message);
+      console.error(e);
+    }
+  }
+
+  public dbBulk(collectionName: string, bulk: BulkData[], cb: CallBack): void {
+    try {
+      const collection = this.getOrAddCollection(collectionName);
+      let result;
+      bulk.forEach((i) => {
+        switch (i.op) {
+          case "update": {
+            const target = collection.by("_id", i.id);
+            if (target) {
+              this.updateDocument(target, i.update!);
+              result = collection.update(target);
+            }
+            break;
+          }
+          case "insert": {
+            this.genId(i.data!);
+            result = collection.insert(i.data);
+            break;
+          }
+          case "remove": {
+            const target = collection.by("_id", i.id);
+            if (target) {
+              result = collection.remove(target);
+            }
+            break;
+          }
+        }
+      });
+      cb(null, result);
     } catch (e) {
       cb((e as Error).message);
       console.error(e);
