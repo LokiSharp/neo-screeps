@@ -282,4 +282,64 @@ describe("Database", () => {
       },
     );
   });
+
+  test("DataBase Env Method", () => {
+    db.dbEnvSet("Foo", "1", (_, result) => {
+      expect(result).not.toBeUndefined();
+    });
+    db.dbEnvGet("Foo", (_, result) => {
+      expect(result).not.toBeUndefined();
+      expect(result).toBe("1");
+    });
+    db.dbEnvSet("Bar", "2", (_, result) => {
+      expect(result).not.toBeUndefined();
+    });
+    db.dbEnvMGet(["Foo", "Bar"], (_, result) => {
+      expect(result).not.toBeUndefined();
+      expect(result).toStrictEqual(["1", "2"]);
+    });
+    db.dbEnvDel("Foo", (_, result) => {
+      expect(result).not.toBeUndefined();
+      expect(result).toBe(1);
+    });
+    db.dbEnvDel("Foo", (_, result) => {
+      expect(result).not.toBeUndefined();
+      expect(result).toBe(0);
+    });
+    db.dbEnvSetEx("Foo", 5, "1", () => {});
+    db.dbEnvTtl("Foo", (_, result) => {
+      expect(result).not.toBeUndefined();
+      expect(result).toBe(5);
+    });
+  });
+
+  test("DataBase Env H Method", () => {
+    db.dbEnvHSet("Foo", "Loki", "1", (_, result) => {
+      expect(result).not.toBeUndefined();
+    });
+    db.dbEnvHGet("Foo", "Loki", (_, result) => {
+      expect(result).not.toBeUndefined();
+      expect(result).toBe("1");
+    });
+  });
+
+  test("DataBase Env HM Method", () => {
+    db.dbEnvHMSet("Foo", { Loki: "1" }, (_, result) => {
+      expect(result).not.toBeUndefined();
+    });
+    db.dbEnvHMGet("Foo", ["Loki"], (_, result) => {
+      expect(result).not.toBeUndefined();
+      expect(result).toStrictEqual(["1"]);
+    });
+  });
+
+  test("DataBase Env S Method", () => {
+    db.dbEnvSAdd("Foo", [1, 2, 3, 4, 5], (_, result) => {
+      expect(result).not.toBeUndefined();
+    });
+    db.dbEnvSMembers("Foo", (_, result) => {
+      expect(result).not.toBeUndefined();
+      expect(result).toStrictEqual([1, 2, 3, 4, 5]);
+    });
+  });
 });

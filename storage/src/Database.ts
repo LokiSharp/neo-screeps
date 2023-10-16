@@ -19,24 +19,29 @@ export class DataBase {
     this.db = this.getDb();
     return new Promise(() => {
       this.db?.loadDatabase({});
-    }).then(this.upgradeDb);
+      this.upgradeDb();
+    });
   }
   public closeDb(): Promise<void> {
     return new Promise(() => {
       this.db?.close();
     });
   }
-  public upgradeDb(): void {
-    let env = this.db!.getCollection("env");
-    if (!env) {
-      this.db?.addCollection("env");
-      env = this.db!.getCollection("env");
-    }
-    const envData = env.get(1);
-    if (!envData) {
-      return;
-    }
+
+  public upgradeDb(): Promise<void> {
+    return new Promise(() => {
+      let env = this.db!.getCollection("env");
+      if (!env) {
+        this.db?.addCollection("env");
+        env = this.db!.getCollection("env");
+      }
+      const envData = env.get(1);
+      if (!envData) {
+        return;
+      }
+    });
   }
+
   public updateDocument(doc: object, update: Data): void {
     if (update.$set) {
       _.extend(doc, update.$set);
@@ -302,6 +307,236 @@ export class DataBase {
         chain = chain.limit(opts.limit);
       }
       cb(null, chain.data());
+    } catch (e) {
+      cb((e as Error).message);
+      console.error(e);
+    }
+  }
+
+  public dbEnvSet(name: string, value: string, cb: CallBack): void {
+    try {
+      const env = this.db!.getCollection("env");
+      let values = env.get(1);
+      if (values) {
+        values.data[name] = value;
+        env.update(values);
+      } else {
+        values = { data: { [name]: value } };
+        env.insert(values);
+      }
+      cb && cb(null, value);
+    } catch (e) {
+      cb((e as Error).message);
+      console.error(e);
+    }
+  }
+
+  public dbEnvSetEx(
+    name: string,
+    seconds: number,
+    value: string,
+    cb: CallBack,
+  ): void {
+    try {
+      this.dbEnvSet(name, value, () => {});
+      this.dbEnvExpire(name, seconds, () => {});
+      cb(null);
+    } catch (e) {
+      cb((e as Error).message);
+      console.error(e);
+    }
+  }
+
+  public dbEnvGet(name: string, cb: CallBack): void {
+    try {
+      const item = this.db!.getCollection("env").get(1) || { data: {} };
+      cb(null, item.data[name]);
+    } catch (e) {
+      cb((e as Error).message);
+      console.error(e);
+    }
+  }
+
+  public dbEnvMGet(names: string[], cb: CallBack): void {
+    try {
+      const item = this.db!.getCollection("env").get(1) || { data: {} };
+      const result = names.map((name) => item.data[name]);
+      cb(null, result);
+    } catch (e) {
+      cb((e as Error).message);
+      console.error(e);
+    }
+  }
+
+  public dbEnvExpire(name: string, seconds: number, cb: CallBack): void {
+    try {
+      const env = this.db!.getCollection("env");
+      let expiration = env.get(2);
+      if (expiration) {
+        expiration.data[name] = Date.now() + seconds * 1000;
+        env.update(expiration);
+      } else {
+        expiration = { data: { [name]: Date.now() + seconds * 1000 } };
+        env.insert(expiration);
+      }
+      cb && cb(null);
+    } catch (e) {
+      cb((e as Error).message);
+      console.error(e);
+    }
+  }
+
+  public dbEnvTtl(name: string, cb: CallBack): void {
+    try {
+      const env = this.db!.getCollection("env");
+      const expiration = env.get(2);
+      if (
+        !expiration ||
+        !expiration.data[name] ||
+        expiration.data[name] < Date.now()
+      ) {
+        cb(null, -1);
+        return;
+      }
+      cb(null, (expiration.data[name] - Date.now()) / 1000);
+    } catch (e) {
+      cb((e as Error).message);
+      console.error(e);
+    }
+  }
+
+  public dbEnvDel(name: string, cb: CallBack): void {
+    try {
+      const env = this.db!.getCollection("env");
+      const values = env.get(1);
+      if (values && values.data[name]) {
+        delete values.data[name];
+        cb(null, 1);
+      } else {
+        cb(null, 0);
+      }
+    } catch (e) {
+      cb((e as Error).message);
+      console.error(e);
+    }
+  }
+
+  public dbEnvHSet(
+    name: string,
+    field: string,
+    value: string,
+    cb: CallBack,
+  ): void {
+    try {
+      const env = this.db!.getCollection("env");
+      let values = env.get(1);
+      if (values) {
+        values.data[name] = values.data[name] || {};
+        values.data[name][field] = value;
+        env.update(values);
+      } else {
+        values = { data: { [name]: { [field]: value } } };
+        env.insert(values);
+      }
+      cb(null, values.data[name][field]);
+    } catch (e) {
+      cb((e as Error).message);
+      console.error(e);
+    }
+  }
+
+  public dbEnvHGet(name: string, field: string, cb: CallBack): void {
+    try {
+      const env = this.db!.getCollection("env");
+      const values = env.get(1);
+      if (values && values.data && values.data[name]) {
+        cb(null, values.data[name][field]);
+      } else {
+        cb(null);
+      }
+    } catch (e) {
+      cb((e as Error).message);
+      console.error(e);
+    }
+  }
+
+  public dbEnvHMSet(
+    name: string,
+    data: { [key: string]: string },
+    cb: CallBack,
+  ): void {
+    try {
+      const env = this.db!.getCollection("env");
+      let values = env.get(1);
+      if (values) {
+        values.data[name] = values.data[name] || {};
+        _.extend(values.data[name], data);
+        env.update(values);
+      } else {
+        values = { data: { [name]: data } };
+        env.insert(values);
+      }
+      cb(null, values.data[name]);
+    } catch (e) {
+      cb((e as Error).message);
+      console.error(e);
+    }
+  }
+
+  public dbEnvHMGet(name: string, fields: string[], cb: CallBack): void {
+    try {
+      const env = this.db!.getCollection("env");
+      const values = env.get(1) || { data: {} };
+      values.data[name] = values.data[name] || {};
+      const result = fields.map((i) => values.data[name][i]);
+      cb(null, result);
+    } catch (e) {
+      cb((e as Error).message);
+      console.error(e);
+    }
+  }
+
+  public dbEnvSAdd(
+    name: string,
+    data: (string | number)[],
+    cb: CallBack,
+  ): void {
+    try {
+      if (!_.isArray(data)) {
+        data = [data];
+      }
+
+      const env = this.db!.getCollection("env");
+      let values = env.get(1);
+      if (values) {
+        values.data[name] = values.data[name] || [];
+        _.forEach(data, (i) => {
+          if (!_.includes(values.data[name], i)) {
+            values.data[name].push(i);
+          }
+        });
+
+        env.update(values);
+      } else {
+        values = { data: { [name]: data } };
+        env.insert(values);
+      }
+      cb(null, values.data[name]);
+    } catch (e) {
+      cb((e as Error).message);
+      console.error(e);
+    }
+  }
+
+  public dbEnvSMembers(name: string, cb: CallBack): void {
+    try {
+      const env = this.db!.getCollection("env");
+      const values = env.get(1) || { data: {} };
+      if (values && values.data && values.data[name]) {
+        cb(null, values.data[name]);
+      } else {
+        cb(null);
+      }
     } catch (e) {
       cb((e as Error).message);
       console.error(e);
