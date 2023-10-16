@@ -223,4 +223,63 @@ describe("Database", () => {
       expect((result as Array<unknown>).length).toBe(0);
     });
   });
+
+  test("DataBase dbFindEx", () => {
+    db.dbRequest(
+      "users",
+      "insert",
+      [
+        [
+          { name: "Odin", type: "God" },
+          { name: "Frigga", type: "God" },
+          { name: "Thor", type: "God" },
+          { name: "Sif", type: "God" },
+          { name: "Loki", type: "God" },
+          { name: "Baldur", type: "God" },
+          { name: "Hodr", type: "God" },
+          { name: "Forseti", type: "God" },
+          { name: "Bragi", type: "God" },
+          { name: "Iðunn", type: "God" },
+          { name: "Njord", type: "God" },
+          { name: "Freyr", type: "God" },
+          { name: "Freyja", type: "God" },
+          { name: "Tyr", type: "God" },
+          { name: "Heimdall", type: "God" },
+        ],
+      ],
+      (_, result) => expect(result).not.toBeUndefined(),
+    );
+    db.dbFindEx(
+      "users",
+      { type: "God" },
+      { sort: { name: 1 } },
+      (_, result) => {
+        expect(result).not.toBeUndefined();
+        expect((result as { name: string; type: string }[])[0].name).toBe(
+          "Baldur",
+        );
+        expect((result as { name: string; type: string }[])[14].name).toBe(
+          "Tyr",
+        );
+      },
+    );
+    db.dbFindEx(
+      "users",
+      { type: "God" },
+      { sort: { name: 1 }, offset: 2 },
+      (_, result) => {
+        expect(result).not.toBeUndefined();
+        expect((result as []).length).toBe(13);
+      },
+    );
+    db.dbFindEx(
+      "users",
+      { type: "God" },
+      { sort: { name: 1 }, limit: 2 },
+      (_, result) => {
+        expect(result).not.toBeUndefined();
+        expect((result as []).length).toBe(2);
+      },
+    );
+  });
 });

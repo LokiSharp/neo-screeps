@@ -94,12 +94,10 @@ export class DataBase {
   }
 
   public getRandomString(): string {
-    let val;
-    for (
-      val = Math.floor(Math.random() * 0x10000).toString(16);
-      val.length < 4;
-      val = "0" + val
-    );
+    let val = Math.floor(Math.random() * 0x10000).toString(16);
+    while (val.length < 4) {
+      val = "0" + val;
+    }
     return val;
   }
 
@@ -276,6 +274,34 @@ export class DataBase {
         }
       });
       cb(null, result);
+    } catch (e) {
+      cb((e as Error).message);
+      console.error(e);
+    }
+  }
+
+  public dbFindEx(
+    collectionName: string,
+    query: Data,
+    opts: FindOps,
+    cb: CallBack,
+  ): void {
+    try {
+      this.recursReplaceNeNull(query);
+      const collection = this.getOrAddCollection(collectionName);
+      let chain = collection.chain().find(query);
+      if (opts.sort) {
+        for (const field in opts.sort) {
+          chain = chain.simplesort(field, opts.sort[field] == -1);
+        }
+      }
+      if (opts.offset) {
+        chain = chain.offset(opts.offset);
+      }
+      if (opts.limit) {
+        chain = chain.limit(opts.limit);
+      }
+      cb(null, chain.data());
     } catch (e) {
       cb((e as Error).message);
       console.error(e);
