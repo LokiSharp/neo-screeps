@@ -28,3 +28,11 @@ type FindOps = {
   offset?: number;
   limit?: number;
 };
+
+type QueueObj = {
+  pending: [];
+  processing: [];
+  emitter: EventEmitter;
+};
+
+type QueueName = "usersLegacy" | "usersIvm" | "rooms";
