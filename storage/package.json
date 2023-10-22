@@ -6,29 +6,37 @@
   "files": [
     "dist"
   ],
-  "main": "./dist/storage.cjs",
-  "module": "./dist/storage.js",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
   "exports": {
     "types": "./dist/index.d.ts",
-    "import": "./dist/storage.js",
-    "require": "./dist/storage.cjs"
+    "import": "./dist/index.js",
+    "require": "./dist/index.js"
   },
   "scripts": {
-    "dev": "vite",
-    "build": "tsc && vite build",
+    "build": "rollup --config rollup.config.ts --configPlugin typescript",
     "lint": "eslint . --ext ts,tsx",
     "test": "jest",
     "coverage": "jest --coverage"
   },
-  "_moduleAliases": {
-    "@": "src"
+  "devDependencies": {
+    "@rollup/plugin-alias": "^5.0.1",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-typescript": "^11.1.5",
+    "@types/lodash": "^4.14.200",
+    "@types/lokijs": "^1.5.10",
+    "rollup": "^4.1.4",
+    "rollup-plugin-dts": "^6.1.0",
+    "ts-node": "^10.9.1",
+    "tsc-alias": "^1.8.8",
+    "tsconfig-paths": "^4.2.0"
   },
   "dependencies": {
     "lodash": "^4.17.21",
     "lokijs": "^1.5.12"
   },
-  "devDependencies": {
-    "@types/lokijs": "^1.5.10",
-    "@types/q": "^1.5.6"
+  "_moduleAliases": {
+    "@": "src"
   }
 }

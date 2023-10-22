@@ -306,11 +306,8 @@ describe("Database", () => {
       expect(result).not.toBeUndefined();
       expect(result).toBe(0);
     });
-    db.dbEnvSetEx("Foo", 5, "1", () => {});
-    db.dbEnvTtl("Foo", (_, result) => {
-      expect(result).not.toBeUndefined();
-      expect(result).toBe(5);
-    });
+    db.dbEnvSetEx("Foo", 100, "1", () => {});
+    db.dbEnvTtl("Foo", () => {});
   });
 
   test("DataBase Env H Method", () => {

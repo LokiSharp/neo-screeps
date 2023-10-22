@@ -10,7 +10,7 @@
   "ignorePatterns": [
     "dist",
     "coverage",
-    "vite.config.ts"
+    "rollup.config.ts"
   ],
   "rules": {
     "@typescript-eslint/explicit-function-return-type": "warn",

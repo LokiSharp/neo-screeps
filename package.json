@@ -24,8 +24,5 @@
     "backend-local",
     "engine",
     "driver"
-  ],
-  "devDependencies": {
-    "vite": "^4.4.11"
-  }
+  ]
 }
