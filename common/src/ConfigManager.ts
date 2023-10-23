@@ -4,15 +4,15 @@ import { dbCollections } from "@/configs/dbCollections";
 import { engine } from "@/configs/engine";
 
 export class ConfigManager {
-  public config = new Config();
+  public config = config;
 }
 
-class Config {
-  public common = {
+export const config = {
+  common: {
     constants: constants,
     dbCollections: dbCollections,
     system: {},
-  };
-  public engine = engine;
-  public storage = storage;
-}
+    storage: storage,
+  },
+  engine: engine,
+};

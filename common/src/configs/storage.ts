@@ -3,4 +3,5 @@ export const storage = {
   queue: {},
   env: {},
   dbOptions: { autosave: true, autosaveInterval: 10000 },
+  dbCollections: [],
 };

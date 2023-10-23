@@ -1,1 +1,1 @@
-export const dbCollections = [];
+export const dbCollections: string[] = ["users", "rooms"];

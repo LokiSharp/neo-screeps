@@ -13,7 +13,7 @@ export class DataBase {
     } catch (e) {
       fs.writeFileSync(process.env.DB_PATH!, "");
     }
-    return new Loki(process.env.DB_PATH!, config.storage.dbOptions);
+    return new Loki(process.env.DB_PATH!, config.common.storage.dbOptions);
   }
   public loadDb(): Promise<void> {
     this.db = this.getDb();

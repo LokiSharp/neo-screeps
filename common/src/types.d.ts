@@ -28,3 +28,7 @@ type RpcResponse = {
   error?: Error;
   result?: object;
 };
+
+type Defer = { defer: Promise<unknown>; reject: Reject; resolve: Resolve };
+type Reject = (reason?: Error) => void;
+type Resolve = (value?: string) => void;

@@ -5,14 +5,7 @@ import { JSONFrameStream } from "@/Rpc/JSONFrameStream";
 export class RpcClient {
   public socket: Socket;
   public requestId: number;
-  public defers: Map<
-    string,
-    {
-      defer: Promise<unknown>;
-      reject: (reason?: Error | undefined) => void;
-      resolve: (value?: object) => void;
-    }
-  >;
+  public defers: Map<string, Defer>;
   public pubSub: EventEmitter;
 
   public constructor(socket: Socket) {
@@ -23,7 +16,7 @@ export class RpcClient {
       ),
     );
     this.requestId = 0;
-    this.defers = new Map();
+    this.defers = new Map<string, Defer>();
     this.pubSub = new EventEmitter();
   }
 
@@ -40,33 +33,31 @@ export class RpcClient {
     if (obj.error) {
       this.defers.get(String(obj.id))!.reject(obj.error);
     } else {
-      this.defers.get(String(obj.id))!.resolve(obj.result);
+      this.defers.get(String(obj.id))!.resolve(obj.result as unknown as string);
     }
     this.defers.delete(String(obj.id));
   }
 
-  public request(
-    method: string,
-    ...args: unknown[]
-  ): {
-    defer: Promise<unknown>;
-    reject: (reason?: Error) => void;
-    resolve: (value?: object) => void;
-  } {
+  public static defer(): Defer {
+    let resolve = ((): void => {}) as Resolve,
+      reject = ((): void => {}) as Reject;
+    const defer = new Promise((res, rej) => {
+      [resolve, reject] = [res, rej];
+    });
+    return { defer, reject, resolve };
+  }
+
+  public request(method: string, ...args: unknown[]): Defer {
     this.requestId++;
     const request = {
       id: this.requestId,
       method,
       args,
     };
-    let resolve = ((): void => {}) as (value?: object) => void,
-      reject = ((): void => {}) as (reason?: Error) => void;
     this.socket.write(JSONFrameStream.makeFrame(request));
-    const defer = new Promise((res, rej) => {
-      [resolve, reject] = [res, rej];
-    });
-    this.defers.set(String(this.requestId), { defer, reject, resolve });
-    return { defer, reject, resolve };
+    const defered = RpcClient.defer();
+    this.defers.set(String(this.requestId), defered);
+    return defered;
   }
 
   public subscribe(
