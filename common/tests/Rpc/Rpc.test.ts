@@ -56,5 +56,5 @@ test("RpcServer", async () => {
   });
   await rpcClient.request("publish", "ps1", "This is ps1").defer;
   expect(logSpy).toBeCalledWith("This is ps1");
-  rpcClient.socket.end();
+  rpcClient.socket.destroy();
 });

@@ -1,3 +1,4 @@
+import { Frame } from "@/types";
 import { Writable, WritableOptions } from "stream";
 
 export class JSONFrameStream extends Writable {

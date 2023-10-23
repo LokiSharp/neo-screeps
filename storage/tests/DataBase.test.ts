@@ -339,4 +339,9 @@ describe("Database", () => {
       expect(result).toStrictEqual([1, 2, 3, 4, 5]);
     });
   });
+
+  test("DataBase toObject", () => {
+    const dbObj = db.toObject();
+    console.log(dbObj);
+  });
 });

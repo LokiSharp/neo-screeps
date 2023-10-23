@@ -1,22 +1,28 @@
 import { Queue } from "@/Queue";
 
+const queue = new Queue();
+
 describe("Queue", () => {
   test("Queue", () => {
-    const queue = new Queue();
-    queue.add("usersLegacy", "1", () => {});
+    queue.queueAdd("usersLegacy", "1", () => {});
     expect(queue.queues["usersLegacy"].pending.length).toBe(1);
-    queue.fetch("usersLegacy", () => {});
+    queue.queueFetch("usersLegacy", () => {});
     expect(queue.queues["usersLegacy"].pending.length).toBe(0);
     expect(queue.queues["usersLegacy"].processing.length).toBe(1);
-    queue.markDone("usersLegacy", "1", () => {});
+    queue.queueMarkDone("usersLegacy", "1", () => {});
     expect(queue.queues["usersLegacy"].processing.length).toBe(0);
-    queue.addMulti("usersLegacy", ["1", "2", "3"], () => {});
+    queue.queueAddMulti("usersLegacy", ["1", "2", "3"], () => {});
     expect(queue.queues["usersLegacy"].pending.length).toBe(3);
-    queue.whenAllDone("usersLegacy", (_, result) => {
+    queue.queueWhenAllDone("usersLegacy", (_, result) => {
       expect(result).toBe(true);
     });
     expect(queue.queues["usersLegacy"].pending.length).toBe(3);
-    queue.reset("usersLegacy", () => {});
+    queue.queueReset("usersLegacy", () => {});
     expect(queue.queues["usersLegacy"].pending.length).toBe(0);
+  });
+
+  test("Queue toObject", () => {
+    const queueObj = queue.toObject();
+    console.log(queueObj);
   });
 });

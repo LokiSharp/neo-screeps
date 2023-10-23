@@ -17,7 +17,27 @@ export class Queue {
 
   public pubSub = new PubSub().create();
 
-  public add(name: QueueName, id: string, cb: CallBack): void {
+  public toObject(): object {
+    const originalClass = this || {};
+    const keys = [
+      "queueFetch",
+      "queueAdd",
+      "queueAddMulti",
+      "queueMarkDone",
+      "queueReset",
+    ];
+    return keys.reduce(
+      (classAsObj: { [name: string]: () => void }, key: string) => {
+        classAsObj[key] = (
+          originalClass as unknown as { [name: string]: () => void }
+        )[key].bind(originalClass);
+        return classAsObj;
+      },
+      {},
+    );
+  }
+
+  public queueAdd(name: QueueName, id: string, cb: CallBack): void {
     try {
       this.queues[name].pending.push(id);
       this.queues[name].emitter.emit("add");
@@ -28,7 +48,7 @@ export class Queue {
     }
   }
 
-  public fetch(name: string, cb: CallBack): void {
+  public queueFetch(name: string, cb: CallBack): void {
     try {
       const check = (): void => {
         if (!this.queues[name].pending.length) {
@@ -46,7 +66,7 @@ export class Queue {
     }
   }
 
-  public addMulti(name: QueueName, array: string[], cb: CallBack): void {
+  public queueAddMulti(name: QueueName, array: string[], cb: CallBack): void {
     try {
       this.queues[name].pending = this.queues[name].pending.concat(array);
       this.queues[name].emitter.emit("add");
@@ -57,7 +77,7 @@ export class Queue {
     }
   }
 
-  public markDone(name: QueueName, id: string, cb: CallBack): void {
+  public queueMarkDone(name: QueueName, id: string, cb: CallBack): void {
     try {
       _.pull(this.queues[name].processing, id);
       this.queues[name].emitter.emit("done");
@@ -68,7 +88,7 @@ export class Queue {
     }
   }
 
-  public whenAllDone(name: QueueName, cb: CallBack): void {
+  public queueWhenAllDone(name: QueueName, cb: CallBack): void {
     try {
       const check = (): void => {
         if (
@@ -88,7 +108,7 @@ export class Queue {
     }
   }
 
-  public reset(name: QueueName, cb: CallBack): void {
+  public queueReset(name: QueueName, cb: CallBack): void {
     try {
       this.queues[name].pending = [];
       this.queues[name].processing = [];

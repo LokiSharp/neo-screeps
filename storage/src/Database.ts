@@ -163,6 +163,39 @@ export class DataBase {
       this.recursReplaceNeNull(val[i]);
     }
   }
+
+  public toObject(): object {
+    const originalClass = this || {};
+    const keys = [
+      "dbRequest",
+      "dbUpdate",
+      "dbBulk",
+      "dbFindEx",
+      "dbEnvGet",
+      "dbEnvMGet",
+      "dbEnvSet",
+      "dbEnvSetEx",
+      "dbEnvExpire",
+      "dbEnvTtl",
+      "dbEnvDel",
+      "dbEnvHMGet",
+      "dbEnvHMGet",
+      "dbEnvHGet",
+      "dbEnvHSet",
+      "dbEnvSAdd",
+      "dbEnvSMembers",
+    ];
+    return keys.reduce(
+      (classAsObj: { [name: string]: () => void }, key: string) => {
+        classAsObj[key] = (
+          originalClass as unknown as { [name: string]: () => void }
+        )[key].bind(originalClass);
+        return classAsObj;
+      },
+      {},
+    );
+  }
+
   public dbRequest(
     collectionName: string,
     method: Method,

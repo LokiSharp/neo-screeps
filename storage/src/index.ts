@@ -18,7 +18,9 @@ function socketListener(socket: net.Socket): void {
   );
   const pubSub = new PubSub();
   const pubSubConnection = pubSub.create();
-  new RpcServer(socket, _.extend({}, pubSubConnection.methods, {}));
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  new RpcServer(socket, _.extend({}, pubSubConnection.methods));
   socket.on("close", () => {
     pubSubConnection.close();
     console.log(`[${connectionDesc}] Connection closed`);

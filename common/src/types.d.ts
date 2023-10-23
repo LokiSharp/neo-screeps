@@ -1,20 +1,22 @@
-type Frame = { data: Buffer; pointer: number; size?: number };
+import { dbCollections } from "@/configs/dbCollections";
 
-type RpcServerFrameObj = {
+export type Frame = { data: Buffer; pointer: number; size?: number };
+
+export type RpcServerFrameObj = {
   method: string;
   channel: string;
   id: string;
   args: unknown[];
 };
 
-type RpcClientFrameObj = {
+export type RpcClientFrameObj = {
   id: string;
   error?: Error;
   result?: object;
   pubSub: ChildProcess;
 };
 
-type RpcMethods = {
+export type RpcMethods = {
   subscribe(
     channel: string,
     listener: (data: { channel: string; data: unknown }) => void,
@@ -23,12 +25,33 @@ type RpcMethods = {
   [name: string]: (cb?: CallBack, ...args) => void;
 };
 
-type RpcResponse = {
+export type RpcResponse = {
   id: string;
   error?: Error;
   result?: object;
 };
 
-type Defer = { defer: Promise<unknown>; reject: Reject; resolve: Resolve };
-type Reject = (reason?: Error) => void;
-type Resolve = (value?: string) => void;
+export type Defer = {
+  defer: Promise<unknown>;
+  reject: Reject;
+  resolve: Resolve;
+};
+export type Reject = (reason?: Error) => void;
+export type Resolve = (value?: string) => void;
+
+export type DataBaseStorage = {
+  [K in (typeof dbCollections)[number]]: DataBaseObject;
+};
+export type DataBaseObject = { [K in DataBaseMethod]: (...args) => Defer };
+export type DataBaseMethod =
+  | "find"
+  | "findOne"
+  | "by"
+  | "clear"
+  | "count"
+  | "ensureIndex"
+  | "removeWhere"
+  | "insert"
+  | "update"
+  | "bulk"
+  | "findEx";
