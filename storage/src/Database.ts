@@ -1,8 +1,9 @@
-import { common } from "@neo-screeps/common";
+import { Common } from "@neo-screeps/common";
 import fs from "fs";
 import _ from "lodash";
 import Loki, { Collection } from "lokijs";
 
+const common = new Common();
 const config = common.configManager.config;
 
 export class DataBase {

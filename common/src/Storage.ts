@@ -2,6 +2,8 @@ import net from "net";
 import { RpcClient } from "@/Rpc/RpcClient";
 import { config } from "@/ConfigManager";
 import { DataBaseStorage, Defer } from "@/types";
+import { makeDefer } from "@/utils";
+
 export let connected = false;
 export let resetAllData: () => Defer;
 export const db: DataBaseStorage = {} as DataBaseStorage;
@@ -33,8 +35,8 @@ export function storageConnect(): Promise<unknown> {
   );
   const rpcClient = new RpcClient(socket);
 
-  const defer = RpcClient.defer();
-  const resetDefer = RpcClient.defer();
+  const defer = makeDefer();
+  const resetDefer = makeDefer();
 
   function resetInterceptor(
     fn: (...args: unknown[]) => Defer,

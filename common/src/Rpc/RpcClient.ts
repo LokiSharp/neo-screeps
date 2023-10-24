@@ -1,7 +1,8 @@
 import { Socket } from "net";
 import { EventEmitter } from "events";
 import { JSONFrameStream } from "@/Rpc/JSONFrameStream";
-import { Defer, Reject, Resolve, RpcClientFrameObj } from "@/types";
+import { Defer, RpcClientFrameObj } from "@/types";
+import { makeDefer } from "@/utils";
 
 export class RpcClient {
   public socket: Socket;
@@ -39,15 +40,6 @@ export class RpcClient {
     this.defers.delete(String(obj.id));
   }
 
-  public static defer(): Defer {
-    let resolve = ((): void => {}) as Resolve,
-      reject = ((): void => {}) as Reject;
-    const defer = new Promise((res, rej) => {
-      [resolve, reject] = [res, rej];
-    });
-    return { defer, reject, resolve };
-  }
-
   public request(method: string, ...args: unknown[]): Defer {
     this.requestId++;
     const request = {
@@ -56,7 +48,7 @@ export class RpcClient {
       args,
     };
     this.socket.write(JSONFrameStream.makeFrame(request));
-    const defered = RpcClient.defer();
+    const defered = makeDefer();
     this.defers.set(String(this.requestId), defered);
     return defered;
   }

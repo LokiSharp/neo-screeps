@@ -55,3 +55,5 @@ export type DataBaseMethod =
   | "update"
   | "bulk"
   | "findEx";
+
+export type Terrain = { type: string; x: number; y: number; room?: string };

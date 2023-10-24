@@ -3,7 +3,9 @@ import * as v8 from "v8";
 import fs from "fs";
 import { Metric, NodeJS, StaticTerrainData, VM } from "@/runtime/types";
 import RuntimeGlobal = NodeJS.RuntimeGlobal;
-import { common } from "@neo-screeps/common";
+import { Common } from "@neo-screeps/common";
+
+const common = new Common();
 
 export class UserVM {
   public vms: { [userId: string]: VM } = {};
