@@ -13,7 +13,10 @@ type Data = {
   [propName: string]: DataType;
 };
 
-type CallBack = (message: string | null, obj?: unknown) => void;
+type CallBack = (
+  message: string | null,
+  obj?: string | boolean | number | object,
+) => void;
 
 type DataType = object | number | string | null | Data;
 

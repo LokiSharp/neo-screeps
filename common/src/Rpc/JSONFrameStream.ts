@@ -1,4 +1,3 @@
-import { Frame } from "@/types";
 import { Writable, WritableOptions } from "stream";
 
 export class JSONFrameStream extends Writable {
@@ -23,7 +22,7 @@ export class JSONFrameStream extends Writable {
     callback();
   }
 
-  public _parse(buffer: Buffer): unknown | undefined {
+  public _parse(buffer: Buffer): void {
     if (!buffer.length) {
       return;
     }

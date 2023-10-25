@@ -1,49 +1,44 @@
-import { dbCollections } from "@/configs/dbCollections";
+type Frame = { data: Buffer; pointer: number; size?: number };
 
-export type Frame = { data: Buffer; pointer: number; size?: number };
-
-export type RpcServerFrameObj = {
+type RpcServerFrameObj = {
   method: string;
   channel: string;
   id: string;
   args: unknown[];
 };
 
-export type RpcClientFrameObj = {
+type RpcClientFrameObj = {
   id: string;
   error?: Error;
   result?: object;
   pubSub: ChildProcess;
 };
 
-export type RpcMethods = {
+type RpcMethods = {
   subscribe(
     channel: string,
-    listener: (data: { channel: string; data: unknown }) => void,
+    listener: (data: { channel: string; data: string }) => void,
   ): () => void;
-  publish: (channel: string, data: unknown, cb?: CallBack) => void;
+  publish: (channel: string, data: string, cb?: CallBack) => void;
   [name: string]: (cb?: CallBack, ...args) => void;
 };
 
-export type RpcResponse = {
+type RpcResponse = {
   id: string;
   error?: Error;
   result?: object;
 };
 
-export type Defer = {
-  defer: Promise<unknown>;
+type Defer = {
+  defer: Promise<string | undefined>;
   reject: Reject;
   resolve: Resolve;
 };
-export type Reject = (reason?: Error) => void;
-export type Resolve = (value?: string) => void;
+type Reject = (reason?: Error) => void;
+type Resolve = (value?: string) => void;
 
-export type DataBaseStorage = {
-  [K in (typeof dbCollections)[number]]: DataBaseObject;
-};
-export type DataBaseObject = { [K in DataBaseMethod]: (...args) => Defer };
-export type DataBaseMethod =
+type DataBaseObject = { [K in DataBaseMethod]: (...args) => Defer };
+type DataBaseMethod =
   | "find"
   | "findOne"
   | "by"
@@ -56,4 +51,4 @@ export type DataBaseMethod =
   | "bulk"
   | "findEx";
 
-export type Terrain = { type: string; x: number; y: number; room?: string };
+type Terrain = { type: string; x: number; y: number; room?: string };

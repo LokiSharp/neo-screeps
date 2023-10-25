@@ -1,5 +1,5 @@
 import { RpcServer } from "@/Rpc/RpcServer";
-import * as storage from "@/Storage";
+import { Storage } from "@/Storage/Storage";
 import { Server, createServer } from "net";
 import _ from "lodash";
 import { DataBase, PubSub, Queue } from "@neo-screeps/storage";
@@ -8,6 +8,7 @@ import fs from "fs";
 const OLD_ENV = process.env;
 let server: Server;
 let db: DataBase;
+const storage = new Storage();
 beforeAll(() => {
   process.env = { ...OLD_ENV }; // Make a copy
   process.env.STORAGE_PORT = "8080";
@@ -51,6 +52,6 @@ test("Storage", async () => {
   await storage.db.rooms.insert({ name: "Loki", age: 1 }).defer;
   await storage.db.rooms
     .find({ age: { $gt: 0 } })
-    .defer.then((result) => expect((result as Array<unknown>).length).toBe(1));
-  storage.socket.destroy();
+    .defer.then((result) => expect(result!.length).toBe(1));
+  storage.socket!.destroy();
 });

@@ -1,18 +1,17 @@
 import { ConfigManager } from "@/ConfigManager";
 export { RpcServer } from "@/Rpc/RpcServer";
 export { RpcClient } from "@/Rpc/RpcClient";
-import * as storage from "@/Storage";
+import { Storage } from "@/Storage/Storage";
 import { JSONFrameStream } from "@/Rpc/JSONFrameStream";
 import { RpcServer } from "@/Rpc/RpcServer";
 import { RpcClient } from "@/Rpc/RpcClient";
-import { Defer, Terrain } from "@/types";
 import { makeDefer } from "@/utils";
 import { createServer } from "net";
 import * as _ from "lodash";
 
 export class Common {
   public configManager = new ConfigManager();
-  public storage = storage;
+  public storage = new Storage();
   public rpc = {
     JSONFrameStream,
     RpcServer,
@@ -75,5 +74,11 @@ export class Common {
     mask: number,
   ): boolean {
     return (parseInt(terrainStr.charAt(y * 50 + x)) & mask) > 0;
+  }
+
+  public getGameTime(): Promise<number> {
+    return this.storage.env
+      .get(this.storage.env.keys.GAME_TIME)
+      .defer.then((data: string | undefined) => parseInt(data!));
   }
 }

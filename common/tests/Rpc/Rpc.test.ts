@@ -19,7 +19,7 @@ beforeAll(() => {
       _.extend({}, pubSubConnection.methods, {
         hello: (
           _: null,
-          cb: (message: string | null, obj?: unknown) => void,
+          cb: (message: string | null, obj?: object) => void,
         ) => {
           try {
             console.log("Hello, this is RpcServer!");

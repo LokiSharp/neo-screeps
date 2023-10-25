@@ -1,7 +1,6 @@
 import { Socket } from "net";
 import { EventEmitter } from "events";
 import { JSONFrameStream } from "@/Rpc/JSONFrameStream";
-import { Defer, RpcClientFrameObj } from "@/types";
 import { makeDefer } from "@/utils";
 
 export class RpcClient {

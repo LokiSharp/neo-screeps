@@ -1,6 +1,5 @@
 import { Socket } from "net";
 import { JSONFrameStream } from "@/Rpc/JSONFrameStream";
-import { RpcMethods, RpcResponse, RpcServerFrameObj } from "@/types";
 
 export class RpcServer {
   public socket: Socket;
