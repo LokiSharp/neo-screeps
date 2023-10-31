@@ -8,9 +8,10 @@ const OLD_ENV = process.env;
 let server: Server;
 beforeAll(() => {
   process.env = { ...OLD_ENV }; // Make a copy
-  process.env.STORAGE_PORT = "8080";
-  process.env.STORAGE_HOST = "localhost";
-
+});
+beforeAll(() => {
+  const PORT = (Math.random() * (20000 - 10000) + 10000).toFixed();
+  process.env.STORAGE_PORT = PORT;
   server = createServer((socket) => {
     const pubSub = new PubSub();
     const pubSubConnection = pubSub.create();

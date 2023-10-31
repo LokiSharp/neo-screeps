@@ -11,11 +11,11 @@ let db: DataBase;
 const storage = new Storage();
 beforeAll(() => {
   process.env = { ...OLD_ENV }; // Make a copy
-  process.env.STORAGE_PORT = "8080";
-  process.env.STORAGE_HOST = "localhost";
-  process.env.DB_PATH = "tmp/db.json";
 });
 beforeEach(() => {
+  const PORT = (Math.random() * (20000 - 10000) + 10000).toFixed();
+  process.env.STORAGE_PORT = PORT;
+  process.env.DB_PATH = "tmp/db" + PORT + ".json";
   fs.mkdirSync("tmp/", { recursive: true });
 
   server = createServer((socket) => {
@@ -37,9 +37,9 @@ beforeEach(() => {
 });
 
 afterEach(async () => {
-  db.db!.close();
+  if (db) db.db!.close();
   server.close();
-  fs.rmSync("tmp/db.json", { recursive: true, force: true });
+  fs.rmSync("tmp/" + process.env.DB_PATH, { recursive: true, force: true });
 }, 5000);
 
 afterAll(() => {
