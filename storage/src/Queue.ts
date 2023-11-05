@@ -1,6 +1,7 @@
 import EventEmitter from "events";
 import { PubSub } from "@/PubSub";
 import _ from "lodash";
+import { CallBack, QueueName } from "@/types";
 
 class QueueObj {
   public pending: string[] = [];

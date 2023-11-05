@@ -1,4 +1,10 @@
-type Data = {
+import EventEmitter from "events";
+
+export type Data = {
+  [propName: string]: DataType;
+} & {
+  [op in keyof LokiOps]?: DataType;
+} & {
   $set?: { [key: string]: DataType };
   $merge?: { [key: string]: DataType };
   $inc?: { [key: string]: DataType };
@@ -9,33 +15,31 @@ type Data = {
   $or?: [DataType, DataType];
   $not?: [DataType, DataType];
   _id?: string;
-  [op: keyof LokiOps]: DataType;
-  [propName: string]: DataType;
 };
 
-type CallBack = (
+export type CallBack = (
   message: string | null,
   obj?: string | boolean | number | object,
 ) => void;
 
-type DataType = object | number | string | null | Data;
+export type DataType = object | number | string | null | Data;
 
-type Method = "insert" | "find" | "findOne" | "count" | "removeWhere";
+export type Method = "insert" | "find" | "findOne" | "count" | "removeWhere";
 
-type BulkData = { op: BulkOp; id?: string; update?: Data; data?: Data };
+export type BulkData = { op: BulkOp; id?: string; update?: Data; data?: Data };
 
-type BulkOp = "update" | "insert" | "remove";
+export type BulkOp = "update" | "insert" | "remove";
 
-type FindOps = {
+export type FindOps = {
   sort?: { [data: string]: number };
   offset?: number;
   limit?: number;
 };
 
-type QueueObj = {
+export type QueueObj = {
   pending: [];
   processing: [];
   emitter: EventEmitter;
 };
 
-type QueueName = "usersLegacy" | "usersIvm" | "rooms";
+export type QueueName = "usersLegacy" | "usersIvm" | "rooms";

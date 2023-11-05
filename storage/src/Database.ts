@@ -2,6 +2,7 @@ import { Common } from "@neo-screeps/common";
 import fs from "fs";
 import _ from "lodash";
 import Loki, { Collection } from "lokijs";
+import { BulkData, CallBack, Data, FindOps, Method } from "@/types";
 
 const common = new Common();
 const config = common.configManager.config;

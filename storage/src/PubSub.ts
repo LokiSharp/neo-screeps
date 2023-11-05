@@ -1,4 +1,5 @@
 import EventEmitter from "events";
+import { CallBack } from "@/types";
 
 export class PubSub {
   private subs: [
